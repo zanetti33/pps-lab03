@@ -29,6 +29,7 @@ object Sequences: // Essentially, generic linkedlists
 
     def take[A](l: Sequence[A])(n: Int): Sequence[A] = ???
     
+    def concat[A](l1: Sequence[A], l2: Sequence[A]): Sequence[A] = ???
     def flatMap[A, B](l: Sequence[A])(mapper: A => Sequence[B]): Sequence[B] = ???
 
     def min(l: Sequence[Int]): Optional[Int] = ???
