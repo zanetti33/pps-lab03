@@ -22,12 +22,3 @@ object Lambda:
   val Plus: L = n => m => s => z => n(s(m(s)(z)))
   val Pred: L = n => n(g => h => h(g(Succ)))(u => N0)(u => u)
   val Subtract: L = n => m => m(Pred)(n)
-
-
-
-
-
-
-
-
-

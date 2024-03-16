@@ -1,5 +1,8 @@
 package u03
 
+import u02.AnonymousFunctions.l
+import u03.Optionals.Optional
+
 object Sequences: // Essentially, generic linkedlists
   
   enum Sequence[E]:
@@ -21,6 +24,15 @@ object Sequences: // Essentially, generic linkedlists
       case Cons(_, t)            => filter(t)(pred)
       case Nil()                 => Nil()
 
+    // Lab 03
+    def zip[A, B](first: Sequence[A], second: Sequence[B]): Sequence[(A, B)] = ???
+
+    def take[A](l: Sequence[A])(n: Int): Sequence[A] = ???
+    
+    def flatMap[A, B](l: Sequence[A])(mapper: A => Sequence[B]): Sequence[B] = ???
+
+    def min(l: Sequence[Int]): Optional[Int] = ???
+    
 @main def trySequences =
   import Sequences.* 
   val l = Sequence.Cons(10, Sequence.Cons(20, Sequence.Cons(30, Sequence.Nil())))

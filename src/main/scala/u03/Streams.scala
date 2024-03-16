@@ -37,6 +37,10 @@ object Streams extends App :
     def iterate[A](init: => A)(next: A => A): Stream[A] =
       cons(init, iterate(next(init))(next))
 
+    // Task 3
+
+    def takeWhile[A](stream: Stream[A])(pred: A => Boolean): Stream[A] = ???
+
   end Stream
 
 @main def tryStreams =
