@@ -29,7 +29,7 @@ object Sequences: // Essentially, generic linkedlists
       case Nil()      => Nil()
     */
     extension [A, B](l: Sequence[A]) def map(mapper: A => B): Sequence[B] = l match
-      case Cons(h, t) => flatMap(l)(element => Cons(mapper(element), Nil()))
+      case Cons(h, t) => l.flatMap(element => Cons(mapper(element), Nil()))
       case Nil()      => Nil()
 
     /*
@@ -56,7 +56,7 @@ object Sequences: // Essentially, generic linkedlists
       case Nil() => l2
 
     extension [A, B](l: Sequence[A]) def flatMap(mapper: A => Sequence[B]): Sequence[B] = l match
-      case Cons(head, tail) => tail.flatMap(mapper).concat(mapper(head)) 
+      case Cons(head, tail) => mapper(head).concat(tail.flatMap(mapper))
       case Nil() => Nil()
 
     import Optional.*
@@ -73,7 +73,7 @@ object Sequences: // Essentially, generic linkedlists
         case Student(_, _) => false))(_ match
         case Teacher(_, course) => course)
       case _ => Nil()
-    
+
     extension [A, B](list: Sequence[A]) @tailrec
     def foldLeft(foldOver: B)(accumulator: (B, A) => B): B = list match
       case Sequence.Cons(head, tail) => tail.foldLeft(accumulator(foldOver, head))(accumulator)
