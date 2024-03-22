@@ -34,3 +34,9 @@ class StreamTest:
       Cons("pippo", Cons("pippo", Cons("pippo", Cons("pippo", Cons("pippo", Nil()))))),
       Stream.toList(Stream.fill(5)("pippo"))
     )
+
+  @Test def pell(): Unit =
+    assertEquals(
+      Cons(1, Cons(2, Cons(5, Cons(12, Cons(29, Nil()))))),
+      Stream.toList(Stream.take(Stream.pell())(5))
+    )

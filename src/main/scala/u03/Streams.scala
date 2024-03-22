@@ -1,5 +1,7 @@
 package u03
 
+import scala.annotation.tailrec
+
 object Streams extends App :
 
   import Sequences.*
@@ -47,7 +49,11 @@ object Streams extends App :
       case n if n <= 0 => Empty()
       case _ => Cons(() => k, () => fill(n - 1)(k))
 
-
+    def pell(): Stream[Int] =
+      def _pell(secondLast: Int, last: Int): Stream[Int] =
+        val current = 2 * last + secondLast
+        cons(current, _pell(last, current))
+      cons(1, cons(2, _pell(1, 2)))
 
   end Stream
 
