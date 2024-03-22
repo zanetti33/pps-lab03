@@ -2,6 +2,9 @@ package u03
 
 import u02.AnonymousFunctions.l
 import u03.Optionals.Optional
+import u03.Sequences.Person.{Student, Teacher}
+
+import scala.annotation.tailrec
 import scala.collection.View.Empty
 
 object Sequences: // Essentially, generic linkedlists
@@ -9,6 +12,10 @@ object Sequences: // Essentially, generic linkedlists
   enum Sequence[E]:
     case Cons(head: E, tail: Sequence[E])
     case Nil()
+
+  enum Person:
+    case Student(name: String, year: Int)
+    case Teacher(name: String, course: String)
 
   object Sequence:
 
@@ -51,14 +58,30 @@ object Sequences: // Essentially, generic linkedlists
     def flatMap[A, B](l: Sequence[A])(mapper: A => Sequence[B]): Sequence[B] = l match
       case Cons(head, tail) => concat(mapper(head), flatMap(tail)(mapper)) 
       case Nil() => Nil()
-    
 
     import Optional.*
+    @tailrec
     def min(l: Sequence[Int]): Optional[Int] = l match
-      case Cons(head, tail) => if filter(tail)(_ < head) != Nil() then min(tail) else Just(head)   
+      case Cons(head, tail) => filter(tail)(_ < head) match
+        case Cons(head, tail) => min(tail)
+        case Nil() => Just(head)
       case Nil() => Optional.Empty()
-    
-    
+
+    def courses(l: Sequence[Person]): Sequence[String] = l match
+      case Cons(_, _) => map(filter(l)(_ match
+        case Teacher(_, _) => true
+        case Student(_, _) => false))(_ match
+        case Teacher(_, course) => course)
+      case _ => Nil()
+
+    @tailrec
+    def foldLeft[A, B](list: Sequence[A])(foldOver: B)(accumulator: (B, A) => B): B = list match
+      case Sequence.Cons(head, tail) =>
+        val partialResult = accumulator(foldOver, head)
+        foldLeft(tail)(partialResult)(accumulator)
+      case Sequence.Nil() => foldOver
+
+
 @main def trySequences =
   import Sequences.* 
   val l = Sequence.Cons(10, Sequence.Cons(20, Sequence.Cons(30, Sequence.Nil())))
@@ -67,3 +90,8 @@ object Sequences: // Essentially, generic linkedlists
   import Sequence.*
 
   println(sum(map(filter(l)(_ >= 20))(_ + 1))) // 21+31 = 52
+  val l2 = Sequence.Cons(Person.Student("Lorenzo", 1), Sequence.Cons(Person.Teacher("Viroli", "PPS"), Sequence.Nil()))
+  println(Sequence.courses(l2)) // Cons(PPS,Nil())
+
+  val lst = Cons(3, Cons(7, Cons(1, Cons(5, Nil()))))
+  println(foldLeft(lst)(0)(_ - _)) // -16
