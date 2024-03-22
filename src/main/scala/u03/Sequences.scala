@@ -19,8 +19,8 @@ object Sequences: // Essentially, generic linkedlists
 
   object Sequence:
 
-    def sum(l: Sequence[Int]): Int = l match
-      case Cons(h, t) => h + sum(t)
+    extension (l: Sequence[Int]) def sum: Int = l match
+      case Cons(h, t) => h + t.sum
       case _          => 0
 
     /*
@@ -28,7 +28,7 @@ object Sequences: // Essentially, generic linkedlists
       case Cons(h, t) => Cons(mapper(h), map(t)(mapper))
       case Nil()      => Nil()
     */
-    def map[A, B](l: Sequence[A])(mapper: A => B): Sequence[B] = l match
+    extension [A, B](l: Sequence[A]) def map(mapper: A => B): Sequence[B] = l match
       case Cons(h, t) => flatMap(l)(element => Cons(mapper(element), Nil()))
       case Nil()      => Nil()
 
@@ -38,47 +38,45 @@ object Sequences: // Essentially, generic linkedlists
       case Cons(_, t)            => filter(t)(pred)
       case Nil()                 => Nil()
     */
-    def filter[A](l1: Sequence[A])(pred: A => Boolean): Sequence[A] = l1 match
+    extension [A](l1: Sequence[A]) def filter(pred: A => Boolean): Sequence[A] = l1 match
       case Cons(h, t) => flatMap(l1)(element => if pred.apply(element) then Cons(element, Nil()) else Nil())
       case Nil() => Nil()
     // Lab 03
-    def zip[A, B](first: Sequence[A], second: Sequence[B]): Sequence[(A, B)] = (first, second) match
-      case (Cons(h, t), Cons(h2, t2)) => Cons((h, h2), zip(t, t2))
+    extension [A, B](first: Sequence[A]) def zip (second: Sequence[B]): Sequence[(A, B)] = (first, second) match
+      case (Cons(h, t), Cons(h2, t2)) => Cons((h, h2), t.zip(t2))
       case _ => Nil()
 
-    def take[A](l: Sequence[A])(n: Int): Sequence[A] = l match
-      case Cons(head, tail) if n > 0 => Cons(head, take(tail)(n - 1))
+    extension [A](l: Sequence[A]) def take(n: Int): Sequence[A] = l match
+      case Cons(head, tail) if n > 0 => Cons(head, tail.take(n - 1))
       case Cons(_, _) => Nil()
       case Nil() => Nil()
     
-    def concat[A](l1: Sequence[A], l2: Sequence[A]): Sequence[A] = l1 match
-      case Cons(head, tail) => Cons(head, concat(tail, l2))
+    extension [A](l1: Sequence[A]) def concat (l2: Sequence[A]): Sequence[A] = l1 match
+      case Cons(head, tail) => Cons(head, tail.concat(l2))
       case Nil() => l2
 
-    def flatMap[A, B](l: Sequence[A])(mapper: A => Sequence[B]): Sequence[B] = l match
-      case Cons(head, tail) => concat(mapper(head), flatMap(tail)(mapper)) 
+    extension [A, B](l: Sequence[A]) def flatMap(mapper: A => Sequence[B]): Sequence[B] = l match
+      case Cons(head, tail) => tail.flatMap(mapper).concat(mapper(head)) 
       case Nil() => Nil()
 
     import Optional.*
-    @tailrec
-    def min(l: Sequence[Int]): Optional[Int] = l match
+    extension (l: Sequence[Int]) @tailrec
+    def min: Optional[Int] = l match
       case Cons(head, tail) => filter(tail)(_ < head) match
-        case Cons(head, tail) => min(tail)
+        case Cons(head, tail) => tail.min
         case Nil() => Just(head)
       case Nil() => Optional.Empty()
 
-    def courses(l: Sequence[Person]): Sequence[String] = l match
+    extension (l: Sequence[Person]) def courses: Sequence[String] = l match
       case Cons(_, _) => map(filter(l)(_ match
         case Teacher(_, _) => true
         case Student(_, _) => false))(_ match
         case Teacher(_, course) => course)
       case _ => Nil()
-
-    @tailrec
-    def foldLeft[A, B](list: Sequence[A])(foldOver: B)(accumulator: (B, A) => B): B = list match
-      case Sequence.Cons(head, tail) =>
-        val partialResult = accumulator(foldOver, head)
-        foldLeft(tail)(partialResult)(accumulator)
+    
+    extension [A, B](list: Sequence[A]) @tailrec
+    def foldLeft(foldOver: B)(accumulator: (B, A) => B): B = list match
+      case Sequence.Cons(head, tail) => tail.foldLeft(accumulator(foldOver, head))(accumulator)
       case Sequence.Nil() => foldOver
 
 
